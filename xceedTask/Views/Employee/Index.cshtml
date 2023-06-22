@@ -1,0 +1,125 @@
+﻿@model TestViewModel
+
+@if (User.IsInRole("Admin") || User.IsInRole("Mang"))
+{
+<a class="btn btn-success" href="/Employee/Create">Add</a>
+}
+<table class="table table-bordered text-center" id="my-table">
+    <thead>
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>NationalID</td>
+            <td>Age</td>
+            <td>Account</td>
+            <td>LineOfBusiness</td>
+            <td>Language</td>
+            <td>LanguageLevel(Oral,Writting,Speaking,Listening)</td>
+            @if (User.IsInRole("Admin") || User.IsInRole("Mang"))
+            {
+                <td>Action</td>
+            }
+        </tr>
+    </thead>
+    @foreach (Employee item in Model.Employees)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+            <td>@item.NationalID.ToString()</td>
+            <td>@item.Age</td>
+            <td>@item.Account.Name</td>
+            <td>
+                <ul>
+                @foreach (var lob in Model.LineOFBusinesses)
+                {
+                        if (lob.Aid == item.Aid)
+                        {
+                            <li>@lob.Name</li>
+                        }
+                }
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    @foreach (var eLang in Model.EmployeeLanguages)
+                    {
+                        if (eLang.EId == item.Id)
+                        {
+                            foreach (var lang in Model.Languages)
+                            {
+                                if (eLang.LId == lang.Id)
+                                {
+                                    <li>@lang.Name</li>
+                                }
+                            }
+                            
+                        }
+                    }
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    @foreach (var lang in Model.Languages)
+                    {
+                        foreach (var eLang in Model.EmployeeLanguages)
+                        {
+                            if (item.Id==eLang.EId&&lang.Id==eLang.LId)
+                            {
+                                <li>@eLang.Oral.ToUpper() , @eLang.Writing.ToUpper() , @eLang.Speaking.ToUpper() , @eLang.Listening.ToUpper() </li>
+                            }
+
+                        }
+
+                        
+                    }
+                </ul>
+            </td>
+            @if (User.IsInRole("Admin") || User.IsInRole("Mang"))
+            {
+                <td>
+                    @Html.ActionLink("Remove", "Remove", new { id = item.Id } ,
+
+
+            new { @class = "btn btn-danger",
+            onclick = $"return confirm('Are you sure you want to delete {item.Name} form Employee?')"
+            })
+                <a class="btn btn-warning" href="/Employee/edit/@item.Id">Edit</a>
+            </td>
+            }
+        </tr>
+
+
+    }
+
+</table>
+<button id="export-btn">Export to Excel</button>
+
+
+@section Scripts {
+
+    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script>
+        
+  
+        // Add an event listener to the export button
+        document.getElementById('export-btn').addEventListener('click', function () {
+            // Get the table HTML element
+            var table = document.getElementById('my-table');
+
+            // Convert the table to a worksheet object
+            var worksheet = XLSX.utils.table_to_sheet(table);
+
+            // Create a new workbook and add the worksheet
+            var workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+            // Save the workbook as an Excel file
+            XLSX.writeFile(workbook, 'my-table.xlsx');
+        });
+    
+
+</script>
+
+ 
+}

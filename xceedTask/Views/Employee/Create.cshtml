@@ -1,0 +1,187 @@
+﻿@model xceedTask.Models.Employee
+
+@{
+    ViewData["Title"] = "Create";
+    SelectList AccountList = new SelectList(ViewBag.Accounts, "Id", "Name");
+}
+
+<h1>Create</h1>
+
+<h4>Employee</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form method="post" action="@Url.Action("Create", "Employee")">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="NationalID" class="control-label"></label>
+                <input asp-for="NationalID" class="form-control" />
+                @*<span asp-validation-for="NationalID" class="text-danger"></span>*@
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                @*<span asp-validation-for="Name" class="text-danger"></span>*@
+            </div>
+         
+            <div class="form-group">
+                <label asp-for="DateOfBirth" class="control-label"></label>
+                <input asp-for="DateOfBirth" class="form-control" />
+                @*<span asp-validation-for="DateOfBirth" class="text-danger"></span>*@
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Account" class="control-label"></label>
+                <select asp-for="Aid" class="form-control" asp-items="AccountList" onchange="GetLOBData()" >
+                    <option value="0">--Select Account--</option>
+                </select>
+
+            </div>
+            <div>
+                <label>Line Of Business </label>
+                <select class="form-control" name="LineOFBusinesses" id="LineOFBusinesses" multiple>
+                </select>
+            </div>
+            <h5>Select language</h5>
+            <br />
+         @*   @foreach (var item in ViewBag.Languages)
+            {
+                <input type="checkbox" name="Lang" value="@item.Id" id="@item.Id" />
+                <label for="@item.Name">
+                    @item.Name
+                </label>
+               
+
+            }*@
+
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Select</th>
+                        <th>Oral</th>
+                        <th>Writting</th>
+                        <th>Speaking</th>
+                        <th>Listening</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                    @foreach (var item in ViewBag.Languages)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>
+                                <input type="checkbox" name="selectedLang" value="@item.Id" />
+                            </td>
+                           
+                                <td>
+                                <select class="form-control" name="oral" id="@item.Id">
+                                    <option value="0">Oral</option>
+                                    <option value="a1">A1</option>
+                                    <option value="a2">A2</option>
+                                    <option value="b1">b1</option>
+                                    <option value="b2">b2</option>
+                                    <option value="c1">c1</option>
+                                    <option value="c2">c2</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" name="writting" id="@item.Id">
+                                    <option value="0">Writting</option>
+                                    <option value="a1">A1</option>
+                                    <option value="a2">A2</option>
+                                    <option value="b1">b1</option>
+                                    <option value="b2">b2</option>
+                                    <option value="c1">c1</option>
+                                    <option value="c2">c2</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" name="speaking" id="@item.Id">
+                                    <option value="0">Speaking</option>
+                                    <option value="a1">A1</option>
+                                    <option value="a2">A2</option>
+                                    <option value="b1">b1</option>
+                                    <option value="b2">b2</option>
+                                    <option value="c1">c1</option>
+                                    <option value="c2">c2</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" name="listening" id="@item.Id">
+                                    <option value="0">Listening</option>
+                                    <option value="a1">A1</option>
+                                    <option value="a2">A2</option>
+                                    <option value="b1">b1</option>
+                                    <option value="b2">b2</option>
+                                    <option value="c1">c1</option>
+                                    <option value="c2">c2</option>
+                                </select>
+                            </td>
+
+
+                          
+                         
+                        </tr>
+                       
+                        
+
+                        
+                    }
+                </tbody>
+            </table>
+           
+            <br />
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+ @*   @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }*@
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script>
+        function GetLOBData() {
+
+            var Aid = document.getElementById("Aid").value;
+            console.log(Aid);
+
+
+            $.ajax({
+                url: "/Employee/GetLOFByAccId?Aid=" + Aid,
+
+                success: function (result) {
+                    console.log(result);
+                    document.getElementById("LineOFBusinesses").innerHTML = "";
+                    for (let i of result) {
+                        document.getElementById("LineOFBusinesses").innerHTML +=
+                            "<option value='" + i.id + "'>" + i.name + "</option>"
+                    }
+                }
+            });
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#'+).change(function () {
+                if (this.checked) {
+                    $('#myDiv').show();
+                } else {
+                    $('#myDiv').hide();
+                }
+            });
+        });
+    </script>
+
+}
